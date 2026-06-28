@@ -363,16 +363,6 @@ with tabs[5]:
     - **Training:** Fine-tuned on CNN/DailyMail for news summarization
     """)
 
-    st.markdown("---")
-    st.subheader("Live ANN Training")
-
-    if st.button("Train ANN on Current News"):
-        result = api("/api/train", method="POST")
-        if result:
-            st.success(f"ANN trained on {result.get('samples', 0)} samples. Test: {result.get('test_prediction', 'N/A')} (confidence: {result.get('test_confidence', 0):.2%})")
-        else:
-            st.warning("Not enough data (need > 5 articles)")
-
 # ===================== TAB 6: DATA PIPELINE =====================
 with tabs[6]:
     st.subheader("End-to-End Data Pipeline")

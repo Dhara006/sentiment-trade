@@ -9,7 +9,6 @@ from datetime import datetime
 
 from src.data.fetcher import DataFetcher
 from src.models.sentiment_bert import VaderSentiment, TextBlobSentiment, BERT_Sentiment
-from src.models.ann_classifier import ANNClassifier
 from src.models.summarizer import SimpleSummarizer
 from src.signals.generator import SignalGenerator
 from src.signals.portfolio import PortfolioTracker
@@ -175,32 +174,6 @@ def get_portfolio():
 def reset_portfolio():
     pt.reset()
     return {"status": "ok"}
-
-# --- Train ANN ---
-@app.post("/api/train")
-def train_ann():
-    all_news = df.news_data
-    if isinstance(all_news, dict):
-        frames = [v for v in all_news.values() if isinstance(v, pd.DataFrame) and not v.empty]
-        all_news = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
-    if all_news.empty or len(all_news) < 5:
-        raise HTTPException(400, "Not enough data")
-    train = all_news.copy()
-    train["vader_sentiment"] = train["headline"].apply(lambda x: vader.analyze(x))
-    train["textblob_sentiment"] = train["headline"].apply(lambda x: tb.analyze(x))
-    train["sentiment_score"] = 0.4 * train["base_sentiment"] + 0.3 * train["vader_sentiment"] + 0.3 * train["textblob_sentiment"]
-    for c in ["tweet_volume", "news_count", "price_momentum", "volatility", "bert_confidence"]:
-        train[c] = np.random.uniform(1, 20, len(train))
-    train["signal"] = np.select([train["sentiment_score"] > 0.3, train["sentiment_score"] < -0.3], [2, 0], default=1)
-    ann = ANNClassifier(input_dim=8)
-    ann.train(train, epochs=30)
-    result = ann.predict(train.head(1))
-    return {
-        "status": "trained",
-        "samples": len(train),
-        "test_prediction": result["signal_label"].iloc[0],
-        "test_confidence": round(float(result["signal_strength"].iloc[0]), 3),
-    }
 
 # --- Summarize ---
 @app.get("/api/summarize/{ticker}")
