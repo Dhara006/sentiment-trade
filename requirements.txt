@@ -10,5 +10,6 @@ yfinance
 scikit-learn
 plotly
 python-dotenv
-torchvision
-streamlit 
+fastapi
+uvicorn
+requests
