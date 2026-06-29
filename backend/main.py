@@ -168,6 +168,7 @@ def reset_portfolio():
 
 @app.get("/api/summarize/{ticker}")
 def summarize(ticker: str, hours: int = 24):
+    from src.models.summarizer import SimpleSummarizer
     s = get_state()
     try:
         news = s["df"].get_news_for_ticker(ticker, hours=hours)
