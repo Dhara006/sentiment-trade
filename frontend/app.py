@@ -8,7 +8,8 @@ import requests
 import time
 from urllib.parse import urljoin
 
-API_BASE = "http://localhost:8000"
+import os
+API_BASE = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 def api(path, method="GET", data=None):
     url = urljoin(API_BASE, path)
