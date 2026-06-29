@@ -1,4 +1,8 @@
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+try:
+    from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+    _HF_AVAILABLE = True
+except ImportError:
+    _HF_AVAILABLE = False
 
 class GenAISummarizer:
     def __init__(self, model_name="facebook/bart-large-cnn"):
@@ -8,6 +12,8 @@ class GenAISummarizer:
         self.model = None
 
     def load(self):
+        if not _HF_AVAILABLE:
+            raise ImportError("transformers not installed")
         if self.summarizer is None:
             try:
                 self.summarizer = pipeline("summarization", model=self.model_name)

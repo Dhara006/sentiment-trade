@@ -1,0 +1,15 @@
+pandas
+numpy
+torch
+transformers
+nltk
+textblob
+vaderSentiment
+streamlit
+yfinance
+scikit-learn
+plotly
+python-dotenv
+fastapi
+uvicorn
+requests
