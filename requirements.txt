@@ -8,3 +8,5 @@ textblob
 vaderSentiment
 yfinance
 python-dotenv
+streamlit
+plotly
