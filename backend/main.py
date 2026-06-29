@@ -169,13 +169,20 @@ def reset_portfolio():
 @app.get("/api/summarize/{ticker}")
 def summarize(ticker: str, hours: int = 24):
     s = get_state()
-    news = s["df"].get_news_for_ticker(ticker, hours=hours)
+    try:
+        news = s["df"].get_news_for_ticker(ticker, hours=hours)
+    except Exception as e:
+        return {"ticker": ticker, "summary": f"Error fetching news: {e}"}
     if news.empty:
         return {"ticker": ticker, "summary": "No news available."}
-    summarizer = SimpleSummarizer()
-    text = ". ".join(news["headline"].tolist()[:10])
-    summary = summarizer.summarize(text, max_len=120)
-    return {"ticker": ticker, "summary": summary}
+    try:
+        summarizer = SimpleSummarizer()
+        headlines = news["headline"].dropna().tolist()[:10]
+        text = ". ".join(str(h) for h in headlines)
+        summary = summarizer.summarize(text, max_len=120)
+        return {"ticker": ticker, "summary": summary}
+    except Exception as e:
+        return {"ticker": ticker, "summary": f"Error generating summary: {e}"}
 
 if __name__ == "__main__":
     import uvicorn
